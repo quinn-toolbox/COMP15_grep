@@ -1,0 +1,114 @@
+
+Name: Quinn Pham
+Date: 11/28/18
+Assignment: Project 2, phase 2
+Overview: Phase 2 of project 2 accomplishes the following goals:
+			> indexes a directory
+			> hashes words into a hash table
+			> creates a program that mirrors grep
+Note: README adapted from Professor Korman's initial README
+
+**********************************************************************
+
+								FILES
+
+> main.cpp: the main driver for grep. Takes a directory and passes it
+to an index object, which then runs the program.
+
+> Index.h and Index.cpp: the Index class. Traverses the given directory
+to isolate words and insert them into a hash table. Reads the user's
+commands and runs the required queries.
+
+> HashTable.h and HashTable.cpp: the HashTable class. Hashes words and
+inserts them into the table. Expands when necessary. Queries words in
+sensitive and insensitive cases.
+
+> Word.h and Word.cpp: the Word class. Basically stores all attributes
+of a word, including the lowercase version, the original version, the
+file it appears in, the line number and line itself. Basic functions to
+get private attributes and overloaded functions.
+
+> LinkedList.h and LinkedList.cpp: the LinkedList class, adapted from
+HW5's LinkedList class. Modified slightly to accommodate Word class. 
+
+> FSTree.o: provided FSTree to store files in a directory
+
+> DirNode.o: provided DirNode to store a directory node
+
+> Makefile: compiling all files into grep program
+
+> README: this file
+
+**********************************************************************
+
+					  DATA STRUCTURE AND ALGORITHMS
+
+	The data structures used in this project include: linked list, hash
+table, tree (FSTree).
+
+	The interaction between classes are as follows: A NodeType class 
+is a simple node struct that is then used in the LinkedList class to
+create linked lists. A Word class is a class that contains attributes
+of each word. The HashTable class is essentially a hash table that 
+contains linked lists of Words. Then, the Index class contains a hash
+table to insert/ query words, but does not have access to the under-
+lying hash table structure. 
+
+	I chose a hash table for this project as it allows us to quickly
+access a key, as the index of the key in the hash table is the same as
+the key's hash value. Given the size of directories provided to us, it
+is essential that the program runs adequately fast and doesn't use up
+all memory. I decided to avoid collisions with the open addressing 
+method as it made it easier to access indices: each index would only 
+contain one key and collisions would move to the next available space,
+so we wouldn't have to traverse a bucket to find the right key. I added
+an expand function so the load factor remains below 0.75 for faster 
+inserts and queries. 
+
+	In each bucket, I would store all possible values of a certain 
+key, for example: the common key would be comp, while the original words 
+could vary from Comp, COmp, cOmP, etc. Then, when doing a case-sensitive 
+search, I would traverse through a bucket (which is a linked list) and 
+return only exact matches. In insensitive searches, I would return the 
+entire linked list. 
+
+	To make sure that I didn't print a line multiple times if querying
+for a word that appears in that line multiple times, I checked the
+bucket (after hashing) for the last inserted word. If it matched, I
+would not insert the new word. 
+
+	In order to save memory, rather than saving the physical line in 
+each Word, I decided to save all lines in a linked list, and each Word
+only has a pointer to that line's position in the linked list. This saves
+us from having to save the same line multiple times, saving memory.
+	
+**********************************************************************
+					  			
+					  			COMPILING
+
+	I created a Makefile for the program. 
+
+	Run make (or make gerp) to compile. Then run ./gerp [directory
+name] to use the program on the specified directory. 
+
+**********************************************************************
+
+					  			TESTING
+
+	I created a directory within my project directory and a couple of
+subdirectories and files to test my gerp program. I started testing my
+Index class first to see if it was traversing directories and saving words correctly. Then, I tested my hash table without expand (on a
+small directory). Then, I tested my hash table with expand (on large
+Gutenberg, to make sure the runtime wasn't too high). Then, I added
+query functions and tested those as well. This allowed me to test my
+functions as I was writing them, so I could fix bugs as they arise.
+
+	Once my program was working with the Gutenberg directories, I
+piped my outputs on each directory into a file to compare them with
+the Gutenberg outputs. In general, as the order was different, I compared
+them by line number instead (as long as the file had a certain number of
+lines for each query, that meant I was not missing anything).
+
+	Though I couldn't run valgrind on the Gutenberg files (they were
+too large), I ran valgrind on my own test directory to check for 
+memory leaks. 	  			
